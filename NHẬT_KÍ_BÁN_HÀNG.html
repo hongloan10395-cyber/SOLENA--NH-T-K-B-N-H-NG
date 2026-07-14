@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhật ký bán hàng & Theo dõi phí — Solena by Green Town | Thiện Nhân Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-900:#0d3327;--green-800:#12432f;--green-700:#1a5a40;--green-600:#227a55;
+  --gold:#c8a24b;--gold-soft:#e4cd93;--gold-deep:#a97f2b;
+  --ink:#1a1f1c;--ink-soft:#4a544e;--line:#e5e2d8;--line-soft:#efece3;
+  --paper:#fbfaf6;--paper-2:#ffffff;--cream:#f4f1e8;
+  --ok:#227a55;--warn:#c9861f;--danger:#b8452f;--info:#2f6db8;
+  --shadow:0 1px 2px rgba(13,51,39,.05),0 8px 24px -12px rgba(13,51,39,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+
+.masthead{background:radial-gradient(120% 140% at 88% -10%,rgba(200,162,75,.22),transparent 55%),linear-gradient(160deg,var(--green-900),var(--green-800) 60%,var(--green-700));color:#f6f4ec;padding:30px clamp(18px,4vw,52px) 26px;position:relative;overflow:hidden}
+.masthead::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--gold-soft) 50%,var(--gold) 80%,transparent)}
+.mh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .eyebrow{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-soft);font-weight:600}
+.brand .project{font-size:clamp(28px,4.2vw,40px);line-height:1;color:#fff;margin:4px 0 2px}
+.brand .project b{color:var(--gold-soft);font-style:italic;font-weight:600}
+.brand .sub{font-size:12.5px;color:#cfe0d5}
+.tng-badge{display:inline-flex;align-items:center;gap:8px;margin-top:14px;background:rgba(255,255,255,.06);border:1px solid rgba(228,205,147,.28);padding:7px 14px;border-radius:100px;font-size:11.5px;letter-spacing:.05em;color:#eadfc4}
+.tng-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(200,162,75,.2)}
+.mh-meta{text-align:right;font-size:12px;color:#d6e4da;display:flex;flex-direction:column;gap:7px;min-width:210px}
+.mh-meta .row{display:flex;justify-content:flex-end;gap:8px;align-items:baseline}
+.mh-meta .k{color:#9dbfaa}
+.mh-meta .v{color:#fff;font-weight:600}
+.mh-meta input{background:rgba(255,255,255,.08);border:1px solid rgba(228,205,147,.35);color:#fff;border-radius:6px;padding:3px 8px;font:inherit;font-size:12px;font-weight:600;width:150px;text-align:right}
+.mh-meta input:focus{outline:none;border-color:var(--gold-soft)}
+
+.wrap{max-width:1640px;margin:0 auto;padding:clamp(16px,3vw,30px) clamp(14px,3vw,40px) 60px}
+.section-label{display:flex;align-items:center;gap:12px;margin:34px 0 16px}
+.section-label .num{font-family:'Playfair Display',serif;font-size:13px;color:var(--gold-deep);font-weight:700;border:1.5px solid var(--gold);border-radius:50%;width:30px;height:30px;display:grid;place-items:center;flex:none;font-style:italic}
+.section-label h2{font-size:20px;color:var(--green-900)}
+.section-label .hint{font-size:12px;color:var(--ink-soft);margin-left:auto;text-align:right}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.kpi{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green-600)}
+.kpi.gold::before{background:var(--gold)}.kpi.blue::before{background:var(--info)}.kpi.warn::before{background:var(--warn)}
+.kpi .label{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);font-weight:600}
+.kpi .val{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:var(--green-900);margin:8px 0 2px;line-height:1}
+.kpi .foot{font-size:12px;color:var(--ink-soft);display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line)}
+.kpi .foot b{color:var(--green-700);font-weight:600}
+.kpi .foot .rem{color:var(--warn)}
+
+/* tier cards */
+.tier-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tier{background:linear-gradient(150deg,var(--cream),#fdfcf7);border:1px solid var(--line);border-radius:15px;padding:18px 20px;box-shadow:var(--shadow)}
+.tier h3{font-size:15px;color:var(--green-900);margin-bottom:3px}
+.tier .src{font-size:11px;color:var(--ink-soft);margin-bottom:14px}
+.tier-steps{display:flex;gap:8px}
+.tstep{flex:1;text-align:center;padding:10px 6px;border-radius:10px;border:1px solid var(--line-soft);background:var(--paper-2);position:relative}
+.tstep.active{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(200,162,75,.12)}
+.tstep .rate{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green-800)}
+.tstep.active .rate{color:var(--gold-deep)}
+.tstep .cond{font-size:10.5px;color:var(--ink-soft);margin-top:2px;line-height:1.3}
+.tstep .flag{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--gold);color:#3a2c07;font-size:9px;font-weight:700;padding:1px 7px;border-radius:100px;white-space:nowrap;letter-spacing:.03em}
+.tier .now{margin-top:12px;font-size:12px;color:var(--ink-soft)}
+.tier .now b{color:var(--green-800)}
+
+.pipeline{background:linear-gradient(150deg,var(--cream),#fdfcf7);border:1px solid var(--line);border-radius:16px;padding:8px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stage{position:relative;padding:18px 18px 16px;border-radius:12px;background:var(--paper-2);border:1px solid var(--line-soft)}
+.stage::after{content:"›";position:absolute;right:-15px;top:50%;transform:translateY(-50%);font-size:26px;color:var(--gold);z-index:3}
+.stage:last-child::after{display:none}
+.stage .st-top{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.stage .st-ico{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:13px;color:#fff;flex:none;font-weight:700}
+.s1 .st-ico{background:var(--info)}.s2 .st-ico{background:var(--green-600)}.s3 .st-ico{background:var(--gold-deep)}.s4 .st-ico{background:var(--green-800)}
+.stage .st-name{font-size:12.5px;font-weight:600;color:var(--ink)}
+.stage .st-count{font-family:'Playfair Display',serif;font-size:30px;font-weight:600;color:var(--green-900);line-height:1}
+.stage .st-count span{font-size:14px;color:var(--ink-soft);font-family:'Be Vietnam Pro'}
+.stage .st-val{font-size:12px;color:var(--ink-soft);margin-top:5px}
+.stage .st-val b{color:var(--green-700)}
+
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.toolbar .search{position:relative;flex:1;min-width:200px}
+.toolbar .search input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;background:var(--paper)}
+.toolbar .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4}
+.toolbar select{padding:9px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;background:var(--paper-2);color:var(--ink);cursor:pointer}
+.toolbar select:focus,.toolbar .search input:focus{outline:none;border-color:var(--green-600)}
+.btn{border:none;border-radius:8px;padding:9px 15px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--green-800);color:#fff}.btn-primary:hover{background:var(--green-900)}
+.btn-gold{background:var(--gold);color:#3a2c07}.btn-gold:hover{background:var(--gold-deep);color:#fff}
+.btn-ghost{background:var(--paper);color:var(--ink-soft);border:1px solid var(--line)}.btn-ghost:hover{border-color:var(--green-600);color:var(--green-800)}
+.spacer{flex:1}
+
+.table-shell{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--paper-2);margin-top:14px}
+.table-scroll{overflow:auto;max-height:74vh}
+.table-scroll::-webkit-scrollbar{height:12px;width:12px}
+.table-scroll::-webkit-scrollbar-track{background:var(--line-soft)}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--gold-soft);border-radius:8px;border:2px solid var(--line-soft)}
+.table-scroll::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:2500px;font-size:11.5px}
+/* ── Ghim hàng tiêu đề (2 dòng) ── */
+thead .grp th{position:sticky;top:0;z-index:6}
+thead .cols th{position:sticky;top:29px;z-index:6}
+/* ── Ghim 2 cột đầu: STT + Mã căn ── */
+thead .cols th:nth-child(1),tbody td:nth-child(1){width:46px;min-width:46px;max-width:46px}
+thead .cols th:nth-child(2),tbody td:nth-child(2){width:104px;min-width:104px;max-width:104px}
+thead .cols th:nth-child(1),tbody td:nth-child(1){position:sticky;left:0}
+thead .cols th:nth-child(2),tbody td:nth-child(2){position:sticky;left:46px}
+thead .cols th:nth-child(1),thead .cols th:nth-child(2){z-index:8;background:var(--cream);box-shadow:1px 0 0 var(--gold-soft)}
+tbody td:nth-child(1),tbody td:nth-child(2){background:var(--paper-2);z-index:3}
+tbody td:nth-child(2){box-shadow:2px 0 5px -3px rgba(13,51,39,.35)}
+tbody tr:hover td:nth-child(1),tbody tr:hover td:nth-child(2){background:#fcfbf5}
+/* ── Ghim hàng tổng cộng dưới đáy ── */
+tfoot td{position:sticky;bottom:0;z-index:5}
+thead .grp th{color:#f4ecd6;font-weight:600;font-size:10px;letter-spacing:.09em;text-transform:uppercase;padding:7px 8px;text-align:center;border-right:1px solid rgba(255,255,255,.08)}
+.g-can{background:var(--green-900)}.g-coc{background:#123a4a}.g-tt{background:var(--green-800)}.g-cdt{background:#6a5216}.g-f1{background:#0e3b2b}.g-kq{background:#3a2c14}
+thead .cols th{background:var(--cream);color:var(--green-900);font-weight:600;font-size:10.5px;padding:8px;text-align:left;border-bottom:2px solid var(--gold-soft);white-space:nowrap}
+thead .cols th.r{text-align:right}thead .cols th.c{text-align:center}
+tbody td{padding:8px;border-bottom:1px solid var(--line-soft);vertical-align:middle;white-space:nowrap}
+tbody tr:hover{background:#fcfbf5}
+td.r{text-align:right}td.c{text-align:center}
+.mc{font-weight:700;color:var(--green-800)}
+.kh{font-weight:600;color:var(--ink)}
+.muted{color:var(--ink-soft);font-size:11px}
+.money{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:500}
+.money.pos{color:var(--green-700);font-weight:600}.money.rem{color:var(--danger);font-weight:600}.money.zero{color:#b9b6ac}
+.dot-cell{line-height:1.3}
+.dot-cell .paid{font-weight:600;font-variant-numeric:tabular-nums}
+.dot-cell .paid.z{color:#b9b6ac}
+.dot-cell .due{font-size:10px;color:var(--ink-soft)}
+.agent-tag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10.5px;font-weight:600;background:var(--cream);color:var(--green-800);border:1px solid var(--line)}
+.agent-tag.intern{background:#e9eef0;color:#3a5a6a;border-color:#d5dfe3}
+.pm-tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;background:#eceadf;color:var(--green-800)}
+.badge{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600}
+.b-ok{background:#e4f1ea;color:var(--ok)}.b-part{background:#fbf0da;color:var(--warn)}.b-none{background:#f6e7e2;color:var(--danger)}.b-info{background:#e5eef9;color:var(--info)}.b-neutral{background:#eeece3;color:var(--ink-soft)}.b-gold{background:#f6edd4;color:var(--gold-deep)}
+.pctbar{width:56px;height:5px;border-radius:100px;background:var(--line);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:5px}
+.pctbar>span{display:block;height:100%;background:var(--green-600)}
+.rowbtn{background:none;border:1px solid var(--line);border-radius:6px;width:26px;height:26px;cursor:pointer;color:var(--ink-soft);font-size:12px;transition:.15s}
+.rowbtn:hover{border-color:var(--green-600);color:var(--green-700);background:var(--cream)}
+.rowbtn.del:hover{border-color:var(--danger);color:var(--danger);background:#f9ece8}
+tfoot td{background:var(--green-900);color:#fff;font-weight:600;padding:10px 8px;border:none;font-size:11.5px}
+tfoot td.r{text-align:right}
+tfoot .tot-label{color:var(--gold-soft);letter-spacing:.04em;text-transform:uppercase;font-size:10.5px}
+.empty{padding:50px;text-align:center;color:var(--ink-soft)}
+.empty h3{font-size:16px;color:var(--green-800);margin-bottom:6px}
+
+.recon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px}
+.recon-card{background:var(--paper-2);border:1px solid var(--line);border-radius:13px;padding:16px 17px;box-shadow:var(--shadow)}
+.recon-card.intern{background:linear-gradient(160deg,#f0f4f5,#fff)}
+.recon-card .rc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.recon-card .rc-name{font-weight:700;color:var(--green-900);font-size:14px}
+.recon-card .rc-count{font-size:11px;color:var(--ink-soft);background:var(--cream);padding:2px 9px;border-radius:100px}
+.recon-card .rc-rate{font-size:11px;color:var(--gold-deep);font-weight:600;margin-bottom:10px}
+.recon-card .rc-line{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
+.recon-card .rc-line:last-child{border:none}
+.recon-card .rc-line .lbl{color:var(--ink-soft)}
+.recon-card .rc-line .amt{font-weight:600;font-variant-numeric:tabular-nums}
+.recon-card .rc-line.total{margin-top:6px;padding-top:9px;border-top:2px solid var(--line)}
+.recon-card .rc-line.total .amt{color:var(--danger);font-size:13.5px}
+.progress{height:6px;border-radius:100px;background:var(--line);overflow:hidden;margin-top:12px}
+.progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--green-600),var(--green-700))}
+.pct-note{font-size:11px;color:var(--ink-soft);margin-top:6px;text-align:right}
+
+.note-box{background:#fbf7ea;border:1px solid var(--gold-soft);border-radius:12px;padding:14px 18px;margin-top:14px;font-size:12.5px;color:#5a4a1e;line-height:1.6}
+.note-box b{color:var(--gold-deep)}
+
+.overlay{position:fixed;inset:0;background:rgba(13,51,39,.5);backdrop-filter:blur(3px);display:none;z-index:100;padding:20px;overflow-y:auto}
+.overlay.show{display:flex;align-items:flex-start;justify-content:center}
+.modal{background:var(--paper);border-radius:16px;max-width:920px;width:100%;margin:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.5);overflow:hidden}
+.modal-head{background:linear-gradient(120deg,var(--green-900),var(--green-800));color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+.modal-head h3{font-size:19px;color:#fff}
+.modal-head .x{background:rgba(255,255,255,.12);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px}
+.modal-body{padding:22px 24px;max-height:70vh;overflow-y:auto}
+.fs{border:1px solid var(--line);border-radius:11px;padding:14px 16px 16px;margin-bottom:16px;background:var(--paper-2)}
+.fs legend{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold-deep);font-weight:700;padding:0 8px}
+.grid-f{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 14px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11.5px;color:var(--ink-soft);font-weight:600}
+.field input,.field select{padding:8px 10px;border:1px solid var(--line);border-radius:7px;font:inherit;font-size:13px;background:var(--paper)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--green-600);background:#fff}
+.field input[readonly]{background:#f0eee6;color:var(--green-800);font-weight:600}
+.field .calc{font-size:11px;color:var(--green-700);font-weight:600}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--paper-2)}
+.modal-foot .live{font-size:12px;color:var(--ink-soft)}
+.modal-foot .live b{color:var(--green-800);font-family:'Playfair Display',serif;font-size:15px}
+footer.doc{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:11.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media (max-width:900px){.pipeline{grid-template-columns:repeat(2,1fr)}.stage:nth-child(2)::after{display:none}.tier-grid{grid-template-columns:1fr}}
+@media print{body{background:#fff}.toolbar,.rowbtn,.mh-meta input,.due-settings{display:none!important}.table-scroll{overflow:visible;max-height:none}table{min-width:0;font-size:8px}thead .grp th,thead .cols th,tbody td:nth-child(1),tbody td:nth-child(2),tfoot td{position:static!important;box-shadow:none!important}.kpi,.recon-card,.stage,.table-shell,.tier{box-shadow:none;break-inside:avoid}.masthead{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+/* ── Chế độ sửa tiêu đề ── */
+body.edit-headers [data-hkey]{outline:2px dashed var(--gold);outline-offset:-2px;cursor:text;border-radius:3px}
+body.edit-headers thead .cols th[data-hkey]{background:#fffdf3}
+.due-settings{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fbf7ea;border:1px solid var(--gold-soft);border-radius:10px;padding:10px 14px;margin-top:12px;font-size:12.5px;color:#5a4a1e}
+.due-settings b{color:var(--gold-deep)}
+.due-settings input{width:56px;padding:4px 6px;border:1px solid var(--gold-soft);border-radius:6px;font:inherit;font-size:12.5px;text-align:center;background:#fff;color:var(--green-900);font-weight:600}
+.due-settings input:focus{outline:none;border-color:var(--gold-deep)}
+.dot-cell .dk{color:var(--info);font-weight:600;font-size:9.5px;margin-top:1px}
+.dot-cell .dk.done{color:var(--green-700)}
+/* ── Khối theo dõi riêng Thiện Nhân Group ── */
+.tng-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;margin-bottom:14px}
+.tng-band{background:linear-gradient(120deg,var(--green-900),var(--green-800) 70%,var(--green-700));border-radius:14px 14px 0 0;color:#f6f4ec;padding:12px 18px;margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.tng-band .bt{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:#fff}
+.tng-band .bt b{color:var(--gold-soft);font-style:italic}
+.tng-band .chip{font-size:10.5px;letter-spacing:.05em;background:rgba(228,205,147,.14);border:1px solid rgba(228,205,147,.35);color:#eadfc4;padding:3px 11px;border-radius:100px}
+.tng-band .chip .n{color:#fff;font-weight:700}
+.tng-shell{border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;box-shadow:var(--shadow);background:var(--paper-2)}
+.tng-table{min-width:1520px}
+.tng-scroll{max-height:56vh}
+.role-tag{display:inline-block;padding:2px 9px;border-radius:100px;font-size:10px;font-weight:700;border:1px solid;white-space:nowrap}
+.role-tag.noibo{background:#e4f1ea;color:var(--green-800);border-color:#bfe0cd}
+.role-tag.f2{background:#eef4fb;color:var(--info);border-color:#cfe0f2}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="mh-top">
+    <div class="brand">
+      <span class="eyebrow">Nhật ký bán hàng & Đối chiếu phí</span>
+      <h1 class="project">Solena <b>by Green Town</b></h1>
+      <span class="sub">Green Town Bình Tân · Tháp Solena – Khối B2 · CĐT: Công ty TNHH IDE Việt Nam · ĐVPP độc quyền: Việt Khởi</span>
+      <span class="tng-badge"><span class="dot"></span> Nhà phân phối: THIỆN NHÂN GROUP (TNG)</span>
+    </div>
+    <div class="mh-meta">
+      <div class="row"><span class="k">Kỳ báo cáo</span><input id="metaKy" type="text" value="Đợt mở bán 12/07/2026"></div>
+      <div class="row"><span class="k">Người lập</span><input id="metaNguoi" type="text" value="Phòng KD – TNG"></div>
+      <div class="row"><span class="k">Cập nhật</span><span class="v" id="metaDate">—</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="section-label"><span class="num">I</span><h2>Tổng quan doanh số & dòng phí</h2><span class="hint">Dòng phí: Việt Khởi/CĐT ➜ TNG ➜ Đại lý F1 & nội bộ</span></div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="section-label"><span class="num">II</span><h2>Bậc phí môi giới lũy tiến</h2><span class="hint">Mức phí hồi tố theo chỉ tiêu tại thời điểm đối chiếu</span></div>
+  <div class="tier-grid" id="tierGrid"></div>
+
+  <div class="section-label"><span class="num">III</span><h2>Tiến độ theo giai đoạn</h2><span class="hint">Đặt cọc → Ký HĐMB → Đủ ĐK tính phí (20%) → Tất toán phí</span></div>
+  <div class="pipeline" id="pipeline"></div>
+
+  <div class="section-label"><span class="num">IV</span><h2>Nhật ký chi tiết từng căn</h2><span class="hint">Nhấp ✎ để cập nhật HĐMB, thanh toán đợt 1/2, phí · dữ liệu tự lưu trên trình duyệt</span></div>
+  <div class="toolbar">
+    <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="q" type="text" placeholder="Tìm mã căn, khách hàng, SĐT, số HĐMB…"></div>
+    <select id="fAgent"><option value="">Tất cả sàn</option></select>
+    <select id="fStage">
+      <option value="">Tất cả giai đoạn</option>
+      <option value="coc">Mới đặt cọc</option>
+      <option value="hd">Đã ký HĐMB</option>
+      <option value="gdtc">Đủ ĐK tính phí (GDTC)</option>
+      <option value="thuphi">Chưa thu đủ phí CĐT</option>
+      <option value="traphi">Chưa trả đủ phí F1</option>
+      <option value="done">Đã tất toán</option>
+    </select>
+    <button class="btn btn-primary" onclick="openModal()">＋ Thêm căn</button>
+    <button class="btn btn-ghost" id="btnEditHead" onclick="toggleEditHeaders()">✎ Sửa tiêu đề</button>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" onclick="exportCSV()">⤓ Xuất CSV</button>
+    <button class="btn btn-ghost" onclick="exportJSON()">⤓ Sao lưu</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('imp').click()">⤒ Khôi phục</button>
+    <input id="imp" type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="btn btn-gold" onclick="window.print()">🖶 In / PDF</button>
+  </div>
+  <div class="due-settings">
+    <span>📅 <b>Lịch thanh toán dự kiến</b> (tính từ ngày cọc theo CSBH):</span>
+    <span>Đợt 1 = ngày cọc + <input id="off1" type="number" min="0" step="1" value="6"> ngày làm việc</span>
+    <span>· Đợt 2 = đợt 1 + <input id="off2" type="number" min="0" step="1" value="30"> ngày</span>
+    <span style="color:var(--ink-soft)">— chỉnh lại đúng theo chính sách, ngày sẽ tự cập nhật cho mọi căn.</span>
+  </div>
+  <div class="table-shell"><div class="table-scroll"><table>
+    <thead>
+      <tr class="grp">
+        <th class="g-can" colspan="7" data-hkey="g0">Thông tin căn & khách hàng</th>
+        <th class="g-coc" colspan="2" data-hkey="g1">Đặt cọc</th>
+        <th class="g-tt" colspan="7" data-hkey="g2">Hợp đồng & tiến độ thanh toán khách</th>
+        <th class="g-cdt" colspan="4" data-hkey="g3">Phí TNG nhận (Việt Khởi/CĐT)</th>
+        <th class="g-f1" colspan="6" data-hkey="g4">Phí trả đại lý F1 & thưởng</th>
+        <th class="g-kq" colspan="3" data-hkey="g5">Kết quả</th>
+      </tr>
+      <tr class="cols">
+        <th data-hkey="c0">STT</th><th data-hkey="c1">Mã căn</th><th data-hkey="c2">Loại</th><th class="r" data-hkey="c3">DT (m²)</th><th data-hkey="c4">Khách hàng</th><th data-hkey="c5">SĐT</th><th data-hkey="c6">Sàn / Đại lý</th>
+        <th data-hkey="c7">Ngày cọc</th><th class="r" data-hkey="c8">Tiền cọc</th>
+        <th class="c" data-hkey="c9">PTTT</th><th class="r" data-hkey="c10">Giá trị HĐ (gồm VAT)</th><th data-hkey="c11">Ngày HĐMB</th><th data-hkey="c12">Số HĐMB</th><th class="r" data-hkey="c13">Đợt 1 (đã/cần)</th><th class="r" data-hkey="c14">Đợt 2 (đã/cần)</th><th class="c" data-hkey="c15">% lũy kế</th>
+        <th class="c" data-hkey="c16">%CĐT</th><th class="r" data-hkey="c17">Phí CĐT dự kiến</th><th class="r" data-hkey="c18">Đã thu</th><th class="r" data-hkey="c19">Còn thu</th>
+        <th class="c" data-hkey="c20">%F1</th><th class="r" data-hkey="c21">Phí F1</th><th class="r" data-hkey="c22">Thưởng nóng</th><th class="r" data-hkey="c23">∑ Phải trả</th><th class="r" data-hkey="c24">Đã trả</th><th class="r" data-hkey="c25">Còn trả</th>
+        <th class="r" data-hkey="c26">LN TNG</th><th class="c" data-hkey="c27">Trạng thái</th><th class="c" data-hkey="c28"></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+    <tfoot id="tfoot"></tfoot>
+  </table></div></div>
+
+  <div class="section-label"><span class="num">V</span><h2>Theo dõi riêng Thiện Nhân Group</h2><span class="hint" data-hkey="tngHint">Nội bộ TNG & Đại lý F2 · giám sát sát sao cọc → HĐMB → đợt 1/2</span></div>
+  <div class="tng-summary" id="tngSummary"></div>
+  <div class="tng-band">
+    <span class="bt">Sổ theo dõi <b>Thiện Nhân Group</b></span>
+    <span class="chip">Nội bộ: <span class="n" id="tngChipNB">0</span> căn</span>
+    <span class="chip">Đại lý F2: <span class="n" id="tngChipF2">0</span> căn</span>
+    <span class="chip">Đã ký HĐMB: <span class="n" id="tngChipHD">0</span></span>
+  </div>
+  <div class="tng-shell"><div class="table-scroll tng-scroll"><table class="tng-table">
+    <thead>
+      <tr class="grp">
+        <th class="g-can" colspan="6" data-hkey="tg0">Căn hộ & khách hàng · TNG</th>
+        <th class="g-coc" colspan="3" data-hkey="tg1">Phụ trách & cọc</th>
+        <th class="g-tt" colspan="3" data-hkey="tg2">Giá trị & tiến độ đợt 1/2</th>
+        <th class="g-kq" colspan="2" data-hkey="tg3">HĐMB & ghi chú</th>
+      </tr>
+      <tr class="cols">
+        <th data-hkey="t0">STT</th><th data-hkey="t1">Mã căn</th><th data-hkey="t2">Loại</th><th class="r" data-hkey="t3">DT (m²)</th><th data-hkey="t4">Khách hàng</th><th class="c" data-hkey="t5">Nhóm</th>
+        <th data-hkey="t6">NVKD</th><th data-hkey="t7">Ngày cọc</th><th class="c" data-hkey="t8">PTTT</th>
+        <th class="r" data-hkey="t9">Giá trị HĐ (gồm VAT)</th><th class="c" data-hkey="t10">Đợt 1 · hạn dự kiến</th><th class="c" data-hkey="t11">Đợt 2 · hạn dự kiến</th>
+        <th data-hkey="t12">HĐMB</th><th data-hkey="t13">Ghi chú</th>
+      </tr>
+    </thead>
+    <tbody id="tngBody"></tbody>
+    <tfoot id="tngFoot"></tfoot>
+  </table></div></div>
+
+  <div class="section-label"><span class="num">VI</span><h2>Đối chiếu công nợ phí theo sàn</h2><span class="hint">Cơ sở thanh toán phí cho từng đại lý F1 & nội bộ</span></div>
+  <div class="recon-grid" id="reconGrid"></div>
+
+  <div class="note-box" id="assumeBox"></div>
+
+  <footer class="doc">
+    <span>Solena by Green Town · Khối B2 — Nhật ký bán hàng & đối chiếu phí nội bộ Thiện Nhân Group</span>
+    <span>Tài liệu lưu hành nội bộ</span>
+  </footer>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal">
+  <div class="modal-head"><h3 id="modalTitle">Thêm căn mới</h3><button class="x" onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="f_id">
+    <fieldset class="fs"><legend>Căn hộ & khách hàng</legend><div class="grid-f">
+      <div class="field"><label>Mã căn</label><input id="f_maCan" placeholder="B2-01.06"></div>
+      <div class="field"><label>Loại căn</label><input id="f_loai" placeholder="A3"></div>
+      <div class="field"><label>Tầng</label><input id="f_tang" placeholder="Tầng 2"></div>
+      <div class="field"><label>DT tim tường (m²)</label><input id="f_dt" type="number" step="0.01"></div>
+      <div class="field"><label>Khách hàng</label><input id="f_kh"></div>
+      <div class="field"><label>SĐT</label><input id="f_sdt"></div>
+      <div class="field"><label>Sàn / Đại lý</label><select id="f_agent" onchange="agentRate()"></select></div>
+      <div class="field"><label>NVKD</label><input id="f_nvkd"></div>
+    </div></fieldset>
+    <fieldset class="fs"><legend>Đặt cọc & hợp đồng</legend><div class="grid-f">
+      <div class="field"><label>Ngày đặt cọc</label><input id="f_ngayCoc" type="date" oninput="liveCalc()"></div>
+      <div class="field"><label>Tiền cọc (đ)</label><input id="f_tienCoc" type="number" step="1000000"></div>
+      <div class="field"><label>Giá bán chưa VAT (căn cứ tính phí)</label><input id="f_gia" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field"><label>Giá trị HĐ gồm VAT (KH thanh toán)</label><input id="f_giaHD" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field"><label>Phương thức thanh toán</label><select id="f_pttt" onchange="liveCalc()">
+        <option value="td5">Theo tiến độ</option>
+        <option value="nhanh6">Thanh toán chuẩn</option>
+        <option value="vay6">Vay ngân hàng</option>
+      </select></div>
+      <div class="field"><label>Ngày ký HĐMB</label><input id="f_ngayHD" type="date"></div>
+      <div class="field"><label>Số HĐMB</label><input id="f_soHD"></div>
+    </div></fieldset>
+    <fieldset class="fs"><legend>Tiến độ thanh toán khách hàng</legend><div class="grid-f">
+      <div class="field"><label>Đợt 1 phải nộp</label><input id="f_dot1Due" readonly></div>
+      <div class="field"><label>Đợt 1 – hạn dự kiến</label><input id="f_dot1Exp" readonly></div>
+      <div class="field"><label>Đợt 1 đã nộp (đ)</label><input id="f_dot1Paid" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field"><label>Ngày nộp đợt 1 (thực tế)</label><input id="f_dot1Date" type="date"></div>
+      <div class="field"><label>Đợt 2 phải nộp</label><input id="f_dot2Due" readonly></div>
+      <div class="field"><label>Đợt 2 – hạn dự kiến</label><input id="f_dot2Exp" readonly></div>
+      <div class="field"><label>Đợt 2 đã nộp (đ)</label><input id="f_dot2Paid" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field"><label>Ngày nộp đợt 2 (thực tế)</label><input id="f_dot2Date" type="date"></div>
+    </div></fieldset>
+    <fieldset class="fs"><legend>Phí TNG nhận từ Việt Khởi/CĐT (thượng nguồn)</legend><div class="grid-f">
+      <div class="field"><label>% phí CĐT (lũy tiến)</label><input id="f_pctCDT" type="number" step="0.1" oninput="liveCalc()"></div>
+      <div class="field"><label>Phí CĐT dự kiến</label><input id="f_phiCDT_auto" readonly></div>
+      <div class="field"><label>Phí CĐT đã thu (đ)</label><input id="f_cdtThu" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field"><label>Đợt đối chiếu</label><input id="f_dot" placeholder="Đợt 1..."></div>
+    </div></fieldset>
+    <fieldset class="fs"><legend>Phí trả đại lý F1 & thưởng (hạ nguồn)</legend><div class="grid-f">
+      <div class="field"><label>% phí F1 (0 nếu nội bộ)</label><input id="f_pctF1" type="number" step="0.1" oninput="liveCalc()"></div>
+      <div class="field"><label>Phí F1 dự kiến</label><input id="f_phiF1_auto" readonly></div>
+      <div class="field"><label>Thưởng nóng (đ)</label><input id="f_thuong" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field"><label>Đã trả F1 (đ)</label><input id="f_f1Tra" type="number" step="1000000" oninput="liveCalc()"></div>
+      <div class="field" style="grid-column:1/-1"><label>Ghi chú</label><input id="f_note"></div>
+    </div></fieldset>
+  </div>
+  <div class="modal-foot">
+    <div class="live">LN TNG dự kiến: <b id="liveLN">0 đ</b> · GDTC: <b id="liveGDTC">—</b></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-ghost" onclick="closeModal()">Huỷ</button><button class="btn btn-primary" onclick="saveRecord()">Lưu căn</button></div>
+  </div>
+</div></div>
+
+<script>
+const AGENTS=["Việt Khởi","LM BTI-GEMS","Pitaland","GP Land","Thịnh Phát","TNG – F2 (nội bộ)","TNG (nội bộ)"];
+const EXTERNAL=new Set(["LM BTI-GEMS","Pitaland","GP Land","Thịnh Phát"]);
+const INTERN=new Set(["Việt Khởi","TNG – F2 (nội bộ)","TNG (nội bộ)"]);
+const TNG_GROUP=new Set(["TNG (nội bộ)","TNG – F2 (nội bộ)"]);
+const TOTAL_BASKET=234;
+const PM={td5:{name:"Theo tiến độ",short:"Theo tiến độ",d1:20,d2:10},nhanh6:{name:"Thanh toán chuẩn",short:"TT chuẩn",d1:30,d2:20},vay6:{name:"Vay ngân hàng",short:"Vay NH",d1:30,d2:20}};
+const STORE_KEY="solena_tng_journal_v3";
+let OFF1=6, OFF2=30;            // lịch dự kiến: đợt1 = cọc + OFF1 ngày làm việc; đợt2 = đợt1 + OFF2 ngày
+let LABELS={};                  // tiêu đề tuỳ chỉnh (data-hkey -> text)
+let editHeaders=false;
+let records=[];
+const SEED = [{"id": "d01", "maCan": "B2-01.06", "loai": "A3", "tang": "Tầng 2", "dt": 51.43, "kh": "Lê Thị Thường Em", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2926918007, "giaHD": 3219610000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d02", "maCan": "B2-01.07", "loai": "A4", "tang": "Tầng 2", "dt": 51.14, "kh": "NGUYỄN VIẾT BẢO", "sdt": "", "agent": "TNG – F2 (nội bộ)", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3048414792, "giaHD": 3353256000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d03", "maCan": "B2-01.08", "loai": "A4", "tang": "Tầng 2", "dt": 51.14, "kh": "Nguyễn Quang Thái", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3019146572, "giaHD": 3321061000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d04", "maCan": "B2-02.06", "loai": "A3", "tang": "Tầng 3", "dt": 51.43, "kh": "Phạm Thị Viên", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2926918007, "giaHD": 3219610000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d05", "maCan": "B2-02.07", "loai": "A4", "tang": "Tầng 3", "dt": 51.14, "kh": "Lê Văn Nam", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3048414792, "giaHD": 3353256000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d06", "maCan": "B2-02.10", "loai": "B", "tang": "Tầng 3", "dt": 62.22, "kh": "Phan Thanh Anh", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3503472800, "giaHD": 3853820000, "pttt": "vay6", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · đổi tên BK: Nguyễn Bửu Long"}, {"id": "d07", "maCan": "B2-02.12", "loai": "A2", "tang": "Tầng 3", "dt": 48.5, "kh": "LÊ THỊ HỒNG QUẾ", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2707946441, "giaHD": 2978741000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d08", "maCan": "B2-05.12", "loai": "A2", "tang": "Tầng 6", "dt": 48.5, "kh": "Trần Thị Thanh Phương", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2720212190, "giaHD": 2992233000, "pttt": "nhanh6", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · giữ tên BK: Trần Thị Thanh Phương"}, {"id": "d09", "maCan": "B2-05.17", "loai": "A4", "tang": "Tầng 6", "dt": 51.14, "kh": "Trần Thị Ngọc Hoa", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2950400260, "giaHD": 3245440000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d10", "maCan": "B2-06.06", "loai": "A3", "tang": "Tầng 7", "dt": 51.43, "kh": "Hồ Hoàng Khiêm", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2939924555, "giaHD": 3233917000, "pttt": "vay6", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · đổi tên BK: Phạm Trọng Tiến"}, {"id": "d11", "maCan": "B2-06.07", "loai": "A4", "tang": "Tầng 7", "dt": 51.14, "kh": "Đặng Thị Thúy Sinh", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3061347264, "giaHD": 3367482000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d12", "maCan": "B2-06.08", "loai": "A4", "tang": "Tầng 7", "dt": 51.14, "kh": "Trương Võ Kim Phụng", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3032079045, "giaHD": 3335287000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d13", "maCan": "B2-06.09", "loai": "E3", "tang": "Tầng 7", "dt": 70.77, "kh": "Phạm Thị Bảo Ngọc", "sdt": "", "agent": "GP Land", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3842865429, "giaHD": 4227152000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d14", "maCan": "B2-06.16", "loai": "E3", "tang": "Tầng 7", "dt": 70.77, "kh": "Liêu Việt Trinh", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3842865429, "giaHD": 4227152000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d15", "maCan": "B2-06.17", "loai": "A4", "tang": "Tầng 7", "dt": 51.14, "kh": "Nguyễn Thị Hường", "sdt": "", "agent": "GP Land", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2950400260, "giaHD": 3245440000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d16", "maCan": "B2-07.07", "loai": "A4", "tang": "Tầng 8", "dt": 51.14, "kh": "Trần Thị Thu Nga", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3061347264, "giaHD": 3367482000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · đổi tên BK: Lý Thanh Khánh"}, {"id": "d17", "maCan": "B2-07.08", "loai": "A4", "tang": "Tầng 8", "dt": 51.14, "kh": "Bùi Nguyễn Triều Nghi", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3032079045, "giaHD": 3335287000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d18", "maCan": "B2-07.09", "loai": "E3", "tang": "Tầng 8", "dt": 70.77, "kh": "Nguyễn Thị Trà Phi", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3842865429, "giaHD": 4227152000, "pttt": "vay6", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · giữ tên BK: Nguyễn Thị Trà Phi"}, {"id": "d19", "maCan": "B2-07.12", "loai": "A2", "tang": "Tầng 8", "dt": 48.5, "kh": "VŨ MINH TRƯỜNG", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2720212190, "giaHD": 2992233000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d20", "maCan": "B2-10.03", "loai": "E2", "tang": "Tầng 11", "dt": 70.11, "kh": "Lê Văn Mạnh", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3871746229, "giaHD": 4258921000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d21", "maCan": "B2-10.07", "loai": "A4", "tang": "Tầng 11", "dt": 51.14, "kh": "ĐINH HOÀNG THÔNG", "sdt": "", "agent": "Thịnh Phát", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3078908186, "giaHD": 3386799000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d22", "maCan": "B2-10.09", "loai": "E3", "tang": "Tầng 11", "dt": 70.77, "kh": "Lương Thanh Hoàng", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3867169078, "giaHD": 4253886000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}, {"id": "d23", "maCan": "B2-10.10", "loai": "B", "tang": "Tầng 11", "dt": 62.22, "kh": "Nguyễn Thị Phương Thảo", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3540573196, "giaHD": 3894631000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · đổi tên BK: Nguyễn Minh Khang"}, {"id": "d24", "maCan": "B2-10.12", "loai": "A2", "tang": "Tầng 11", "dt": 48.5, "kh": "Mạch Thu Dung", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2736867838, "giaHD": 3010555000, "pttt": "vay6", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · giữ tên BK: Mạch Thu Dung"}, {"id": "d25", "maCan": "B2-10.14", "loai": "B1", "tang": "Tầng 11", "dt": 67.16, "kh": "Nguyễn Thị Yến", "sdt": "", "agent": "Việt Khởi", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3665946884, "giaHD": 4032542000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d26", "maCan": "B2-10.15", "loai": "B", "tang": "Tầng 11", "dt": 62.22, "kh": "Nguyễn Hoàng Mỹ Linh", "sdt": "", "agent": "LM BTI-GEMS", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3540573196, "giaHD": 3894631000, "pttt": "vay6", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Chuyển cọc · giữ tên BK: Nguyễn Hoàng Mỹ Linh"}, {"id": "d27", "maCan": "B2-10.16", "loai": "E3", "tang": "Tầng 11", "dt": 70.77, "kh": "ĐỖ THỊ THÙY DƯƠNG", "sdt": "", "agent": "TNG (nội bộ)", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 3867169078, "giaHD": 4253886000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": "Nội bộ TNG"}, {"id": "d28", "maCan": "B2-10.17", "loai": "A4", "tang": "Tầng 11", "dt": 51.14, "kh": "Phan Gia Nguyên", "sdt": "", "agent": "Pitaland", "nvkd": "", "ngayCoc": "2026-07-12", "tienCoc": 50000000, "gia": 2967961182, "giaHD": 3264757000, "pttt": "td5", "ngayHD": "", "soHD": "", "dot1Paid": 0, "dot1Date": "", "dot2Paid": 0, "dot2Date": "", "pctCDT": 0, "cdtThu": 0, "dot": "", "pctF1": 0, "thuong": 0, "f1Tra": 0, "note": ""}];
+
+/* fee tiers */
+function upstreamRate(nSold){const p=nSold/TOTAL_BASKET;return p<0.5?4.5:(p<0.8?5.5:6.5);}
+function downstreamRate(agent,nAgent){if(!EXTERNAL.has(agent))return 0;return nAgent<10?4.5:(nAgent<20?5.5:6);}
+
+/* calc */
+const phiCDT=r=>Math.round((r.gia||0)*(r.pctCDT||0)/100);
+const phiF1=r=>Math.round((r.gia||0)*(r.pctF1||0)/100);
+const tongTraF1=r=>phiF1(r)+(r.thuong||0);
+const cdtConLai=r=>Math.max(0,phiCDT(r)-(r.cdtThu||0));
+const f1ConLai=r=>Math.max(0,tongTraF1(r)-(r.f1Tra||0));
+const lnTNG=r=>phiCDT(r)-phiF1(r)-(r.thuong||0);
+const dot1Due=r=>Math.round((r.giaHD||0)*PM[r.pttt||'td5'].d1/100);
+const dot2Due=r=>Math.round((r.giaHD||0)*PM[r.pttt||'td5'].d2/100);
+const cumPaid=r=>(r.dot1Paid||0)+(r.dot2Paid||0);
+const cumPct=r=>r.giaHD?Math.min(100,cumPaid(r)/r.giaHD*100):0;
+const isGDTC=r=>!!r.ngayHD && cumPaid(r)>=(r.giaHD||0)*0.20-1000;
+function stageOf(r){
+  const cdtDone=(r.cdtThu||0)>=phiCDT(r)&&phiCDT(r)>0;
+  const f1Done=(r.f1Tra||0)>=tongTraF1(r)&&tongTraF1(r)>0;
+  const feeSettled=(cdtDone||phiCDT(r)===0)&&(f1Done||tongTraF1(r)===0);
+  if(isGDTC(r)&&feeSettled&&(r.cdtThu||0)>0) return 4;
+  if(isGDTC(r)) return 3;
+  if(r.ngayHD) return 2;
+  return 1;
+}
+
+const fmt=n=>Math.round(n||0).toLocaleString('vi-VN');
+const fmtVND=n=>fmt(n)+' đ';
+function fmtShort(n){n=n||0;if(Math.abs(n)>=1e9)return (n/1e9).toLocaleString('vi-VN',{maximumFractionDigits:2})+' tỷ';if(Math.abs(n)>=1e6)return (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})+' tr';return fmt(n);}
+function fmtDate(s){if(!s)return '—';const p=s.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s;}
+/* ── Lịch thanh toán dự kiến ── */
+function parseD(s){if(!s)return null;const p=(''+s).split('-');if(p.length!==3)return null;return new Date(+p[0],+p[1]-1,+p[2]);}
+function fmtD(d){if(!d)return '—';return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+(+n||0));return x;}
+function addBiz(d,n){const x=new Date(d);let c=0;n=+n||0;while(c<n){x.setDate(x.getDate()+1);const w=x.getDay();if(w!==0&&w!==6)c++;}return x;}
+function dot1ExpDate(r){const c=parseD(r.ngayCoc);return c?addBiz(c,OFF1):null;}
+function dot2ExpDate(r){const d1=dot1ExpDate(r);return d1?addDays(d1,OFF2):null;}
+
+function totals(list){return list.reduce((a,r)=>({gia:a.gia+(r.gia||0),phiCDT:a.phiCDT+phiCDT(r),cdtThu:a.cdtThu+(r.cdtThu||0),cdtConLai:a.cdtConLai+cdtConLai(r),phiF1:a.phiF1+phiF1(r),thuong:a.thuong+(r.thuong||0),traF1:a.traF1+tongTraF1(r),f1Tra:a.f1Tra+(r.f1Tra||0),f1ConLai:a.f1ConLai+f1ConLai(r),ln:a.ln+lnTNG(r),coc:a.coc+(r.tienCoc||0)}),{gia:0,phiCDT:0,cdtThu:0,cdtConLai:0,phiF1:0,thuong:0,traF1:0,f1Tra:0,f1ConLai:0,ln:0,coc:0});}
+
+function renderKPI(){
+  const t=totals(records);
+  const gdtc=records.filter(isGDTC).length;
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi"><div class="label">Doanh số (chưa VAT)</div><div class="val">${fmtShort(t.gia)}</div><div class="foot"><span>Số căn đã cọc</span><b>${records.length}/${TOTAL_BASKET}</b></div></div>
+    <div class="kpi gold"><div class="label">Phí TNG nhận (dự kiến)</div><div class="val">${fmtShort(t.phiCDT)}</div><div class="foot"><span>Đã thu <b>${fmtShort(t.cdtThu)}</b></span><span class="rem">Còn ${fmtShort(t.cdtConLai)}</span></div></div>
+    <div class="kpi warn"><div class="label">Phí phải trả F1</div><div class="val">${fmtShort(t.traF1)}</div><div class="foot"><span>Đã trả <b>${fmtShort(t.f1Tra)}</b></span><span class="rem">Còn ${fmtShort(t.f1ConLai)}</span></div></div>
+    <div class="kpi blue"><div class="label">Lợi nhuận TNG (chênh phí)</div><div class="val">${fmtShort(t.ln)}</div><div class="foot"><span>Đủ ĐK tính phí</span><b>${gdtc}/${records.length} căn</b></div></div>`;
+}
+
+function renderTiers(){
+  const nSold=records.length;
+  const upRate=upstreamRate(nSold);
+  const pctBasket=(nSold/TOTAL_BASKET*100);
+  const upSteps=[{r:'4,5%',c:'&lt; 50% giỏ hàng',a:pctBasket<50},{r:'5,5%',c:'50% – 80% giỏ',a:pctBasket>=50&&pctBasket<80},{r:'6,5%',c:'≥ 80% giỏ',a:pctBasket>=80}];
+  const dnSteps=[{r:'4,5%',c:'&lt; 10 SP/sàn'},{r:'5,5%',c:'10 – 20 SP'},{r:'6%',c:'≥ 20 SP'}];
+  const maxAgent=Math.max(0,...Object.values(countByAgent()));
+  const dnActive=maxAgent<10?0:(maxAgent<20?1:2);
+  document.getElementById('tierGrid').innerHTML=`
+    <div class="tier"><h3>Thượng nguồn · TNG nhận từ Việt Khởi/CĐT</h3><div class="src">HĐ số 01-2026/HĐTTPP/VK-TNG · Điều 3 · căn hộ, lũy tiến toàn phần, chưa VAT</div>
+      <div class="tier-steps">${upSteps.map(s=>`<div class="tstep ${s.a?'active':''}">${s.a?'<span class="flag">Đang áp dụng</span>':''}<div class="rate">${s.r}</div><div class="cond">${s.c}</div></div>`).join('')}</div>
+      <div class="now">Đã bán <b>${nSold}/${TOTAL_BASKET}</b> căn = <b>${pctBasket.toFixed(1)}%</b> giỏ hàng → mức phí hiện tại <b>${upRate.toString().replace('.',',')}%</b>. Mức phí được hồi tố khi đạt mốc chỉ tiêu.</div></div>
+    <div class="tier"><h3>Hạ nguồn · TNG trả đại lý F1</h3><div class="src">HĐ số 01/2026/HĐMG/TNG-BT · Điều 3 · lũy tiến theo số SP mỗi sàn, đã gồm VAT</div>
+      <div class="tier-steps">${dnSteps.map((s,i)=>`<div class="tstep ${i===dnActive?'active':''}">${i===dnActive?'<span class="flag">Sàn cao nhất</span>':''}<div class="rate">${s.r}</div><div class="cond">${s.c}</div></div>`).join('')}</div>
+      <div class="now">Sàn bán nhiều nhất hiện <b>${maxAgent} SP</b> → mức phí <b>${(maxAgent<10?'4,5':(maxAgent<20?'5,5':'6'))}%</b>. Sản phẩm nội bộ TNG không phát sinh phí F1 ngoài.</div></div>`;
+}
+function countByAgent(){const m={};records.forEach(r=>{if(EXTERNAL.has(r.agent))m[r.agent]=(m[r.agent]||0)+1;});return m;}
+
+function renderPipeline(){
+  const c=[0,0,0,0,0],v=[0,0,0,0,0];
+  records.forEach(r=>{const s=stageOf(r);c[s]++;v[s]+=(r.gia||0);});
+  const stages=[{cls:'s1',ico:'①',name:'Mới đặt cọc',i:1},{cls:'s2',ico:'②',name:'Đã ký HĐMB',i:2},{cls:'s3',ico:'③',name:'Đủ ĐK tính phí (20%)',i:3},{cls:'s4',ico:'④',name:'Đã tất toán phí',i:4}];
+  document.getElementById('pipeline').innerHTML=stages.map(s=>`<div class="stage ${s.cls}"><div class="st-top"><span class="st-ico">${s.ico}</span><span class="st-name">${s.name}</span></div><div class="st-count">${c[s.i]}<span> căn</span></div><div class="st-val">Giá trị: <b>${fmtShort(v[s.i])}</b></div></div>`).join('');
+}
+
+function money(n,cls){if(!n)return `<span class="money zero">—</span>`;return `<span class="money ${cls||''}">${fmt(n)}</span>`;}
+function dotCell(paid,due){const z=!paid?'z':'';return `<div class="dot-cell"><div class="paid ${z}">${paid?fmt(paid):'0'}</div><div class="due">/ ${fmt(due)}</div></div>`;}
+function dueCell(paid,due,expD,actD){const z=!paid?'z':'';let dt='';if(actD)dt=`<div class="dk done">TT: ${fmtDate(actD)}</div>`;else if(expD)dt=`<div class="dk">DK: ${fmtD(expD)}</div>`;return `<div class="dot-cell"><div class="paid ${z}">${paid?fmt(paid):'0'}</div><div class="due">/ ${fmt(due)}</div>${dt}</div>`;}
+function statusCell(r){
+  let out='';
+  if(isGDTC(r))out+='<span class="badge b-gold">GDTC ✓</span> ';
+  else if(r.ngayHD)out+='<span class="badge b-info">Đã HĐ</span> ';
+  else out+='<span class="badge b-neutral">Cọc</span> ';
+  const cdt=phiCDT(r),ct=r.cdtThu||0;
+  if(cdt>0){if(ct>=cdt)out+='<span class="badge b-ok">Thu đủ</span>';else if(ct>0)out+='<span class="badge b-part">Thu 1 phần</span>';else out+='<span class="badge b-none">Chưa thu</span>';}
+  const tf=tongTraF1(r),ft=r.f1Tra||0;
+  out+=' ';
+  if(tf>0){if(ft>=tf)out+='<span class="badge b-ok">Trả đủ</span>';else if(ft>0)out+='<span class="badge b-part">Trả 1 phần</span>';else out+='<span class="badge b-none">Chưa trả F1</span>';}
+  else out+='<span class="badge b-neutral">Nội bộ</span>';
+  return out;
+}
+
+function passFilter(r){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  const fa=document.getElementById('fAgent').value,fs=document.getElementById('fStage').value;
+  if(fa&&r.agent!==fa)return false;
+  if(q){const hay=[r.maCan,r.kh,r.sdt,r.soHD,r.nvkd].join(' ').toLowerCase();if(!hay.includes(q))return false;}
+  if(fs){const s=stageOf(r);
+    if(fs==='coc'&&s!==1)return false;
+    if(fs==='hd'&&!r.ngayHD)return false;
+    if(fs==='gdtc'&&!isGDTC(r))return false;
+    if(fs==='thuphi'&&cdtConLai(r)<=0)return false;
+    if(fs==='traphi'&&f1ConLai(r)<=0)return false;
+    if(fs==='done'&&s!==4)return false;
+  }
+  return true;
+}
+
+function renderTable(){
+  const list=records.filter(passFilter);
+  const tb=document.getElementById('tbody');
+  if(!list.length){tb.innerHTML=`<tr><td colspan="29"><div class="empty"><h3>Chưa có dữ liệu phù hợp</h3><p>Nhấn “＋ Thêm căn” hoặc đổi bộ lọc.</p></div></td></tr>`;document.getElementById('tfoot').innerHTML='';return;}
+  tb.innerHTML=list.map((r,i)=>`<tr>
+    <td class="c muted">${i+1}</td><td><span class="mc">${r.maCan||'—'}</span></td><td class="muted">${r.loai||''}</td><td class="r muted">${r.dt||'—'}</td>
+    <td><span class="kh">${r.kh||'—'}</span></td><td class="muted">${r.sdt||'—'}</td>
+    <td><span class="agent-tag ${INTERN.has(r.agent)?'intern':''}">${r.agent||'—'}</span></td>
+    <td class="muted">${fmtDate(r.ngayCoc)}</td><td class="r">${money(r.tienCoc)}</td>
+    <td class="c"><span class="pm-tag">${PM[r.pttt||'td5'].short}</span></td><td class="r">${money(r.giaHD)}</td>
+    <td class="muted">${fmtDate(r.ngayHD)}</td><td class="muted">${r.soHD||'—'}</td>
+    <td class="r">${dueCell(r.dot1Paid,dot1Due(r),dot1ExpDate(r),r.dot1Date)}</td><td class="r">${dueCell(r.dot2Paid,dot2Due(r),dot2ExpDate(r),r.dot2Date)}</td>
+    <td class="c"><span class="pctbar"><span style="width:${cumPct(r)}%"></span></span><span class="muted">${cumPct(r).toFixed(0)}%</span></td>
+    <td class="c muted">${(r.pctCDT||0).toString().replace('.',',')}%</td><td class="r">${money(phiCDT(r))}</td><td class="r">${money(r.cdtThu,'pos')}</td><td class="r">${money(cdtConLai(r),'rem')}</td>
+    <td class="c muted">${(r.pctF1||0).toString().replace('.',',')}%</td><td class="r">${money(phiF1(r))}</td><td class="r">${money(r.thuong)}</td><td class="r">${money(tongTraF1(r))}</td><td class="r">${money(r.f1Tra,'pos')}</td><td class="r">${money(f1ConLai(r),'rem')}</td>
+    <td class="r">${money(lnTNG(r),'pos')}</td><td class="c">${statusCell(r)}</td>
+    <td class="c" style="white-space:nowrap"><button class="rowbtn" onclick="openModal('${r.id}')" title="Sửa">✎</button> <button class="rowbtn del" onclick="delRecord('${r.id}')" title="Xoá">🗑</button></td>
+  </tr>`).join('');
+  const t=totals(list);
+  document.getElementById('tfoot').innerHTML=`<tr>
+    <td colspan="8" class="tot-label">Tổng cộng (${list.length} căn)</td><td class="r">${fmt(t.coc)}</td>
+    <td></td><td class="r">${fmt(list.reduce((a,r)=>a+(r.giaHD||0),0))}</td><td colspan="3"></td>
+    <td class="r">${fmt(list.reduce((a,r)=>a+(r.dot1Paid||0),0))}</td><td></td>
+    <td class="r">${fmt(t.phiCDT)}</td><td class="r">${fmt(t.cdtThu)}</td><td class="r">${fmt(t.cdtConLai)}</td>
+    <td></td><td class="r">${fmt(t.phiF1)}</td><td class="r">${fmt(t.thuong)}</td><td class="r">${fmt(t.traF1)}</td><td class="r">${fmt(t.f1Tra)}</td><td class="r">${fmt(t.f1ConLai)}</td>
+    <td class="r">${fmt(t.ln)}</td><td colspan="2"></td></tr>`;
+}
+
+function renderRecon(){
+  const map={};
+  records.forEach(r=>{const k=r.agent||'—';if(!map[k])map[k]={n:0,phiF1:0,thuong:0,tra:0,f1Tra:0,pct:r.pctF1,intern:INTERN.has(k)};map[k].n++;map[k].phiF1+=phiF1(r);map[k].thuong+=(r.thuong||0);map[k].tra+=tongTraF1(r);map[k].f1Tra+=(r.f1Tra||0);});
+  const keys=Object.keys(map).sort((a,b)=>map[b].tra-map[a].tra||map[b].n-map[a].n);
+  document.getElementById('reconGrid').innerHTML=keys.map(k=>{
+    const m=map[k],conLai=Math.max(0,m.tra-m.f1Tra),pct=m.tra?Math.min(100,m.f1Tra/m.tra*100):0;
+    return `<div class="recon-card ${m.intern?'intern':''}"><div class="rc-top"><span class="rc-name">${k}</span><span class="rc-count">${m.n} căn</span></div>
+      <div class="rc-rate">${m.intern?'Nội bộ TNG · không phát sinh phí F1 ngoài':'Mức phí F1: '+(m.pct||0).toString().replace('.',',')+'%'}</div>
+      ${m.intern?`<div class="rc-line"><span class="lbl">Thưởng/hoa hồng nội bộ</span><span class="amt">${fmtVND(m.thuong)}</span></div>`:`
+      <div class="rc-line"><span class="lbl">Phí F1</span><span class="amt">${fmtVND(m.phiF1)}</span></div>
+      <div class="rc-line"><span class="lbl">Thưởng nóng</span><span class="amt">${fmtVND(m.thuong)}</span></div>
+      <div class="rc-line"><span class="lbl">∑ Phải trả</span><span class="amt">${fmtVND(m.tra)}</span></div>
+      <div class="rc-line"><span class="lbl">Đã thanh toán</span><span class="amt" style="color:var(--green-700)">${fmtVND(m.f1Tra)}</span></div>
+      <div class="rc-line total"><span class="lbl">Còn phải trả</span><span class="amt">${fmtVND(conLai)}</span></div>
+      <div class="progress"><span style="width:${pct}%"></span></div><div class="pct-note">Đã thanh toán ${pct.toFixed(0)}%</div>`}
+    </div>`;
+  }).join('');
+}
+
+/* ── Theo dõi riêng Thiện Nhân Group (Nội bộ + Đại lý F2) ── */
+function tngRoleKey(a){return a==="TNG – F2 (nội bộ)"?"f2":"noibo";}
+function tngRoleName(a){return a==="TNG – F2 (nội bộ)"?"Đại lý F2":"Nội bộ";}
+function dueBadgeHtml(expD,paid,actD){
+  if(actD)return `<div class="dk done">TT ${fmtDate(actD)}</div><span class="badge b-ok">Đã nộp</span>`;
+  if(paid>0)return `<span class="badge b-ok">Đã nộp</span>`;
+  if(!expD)return `<span class="badge b-neutral">—</span>`;
+  const t=new Date();t.setHours(0,0,0,0);const d=Math.round((expD-t)/86400000);
+  let b;if(d<0)b='<span class="badge b-none">Quá hạn</span>';else if(d<=7)b='<span class="badge b-part">Sắp đến hạn</span>';else b='<span class="badge b-info">Chưa đến hạn</span>';
+  return `<div class="dk">${fmtD(expD)}</div>${b}`;
+}
+function renderTNG(){
+  const list=records.filter(r=>TNG_GROUP.has(r.agent)).sort((a,b)=>(a.maCan||'').localeCompare(b.maCan||''));
+  const noibo=list.filter(r=>r.agent==="TNG (nội bộ)");
+  const f2=list.filter(r=>r.agent==="TNG – F2 (nội bộ)");
+  const ds=arr=>arr.reduce((a,r)=>a+(r.gia||0),0);
+  const kyHD=list.filter(r=>r.ngayHD).length;
+  const t=new Date();t.setHours(0,0,0,0);
+  let alert1=0,alert2=0;
+  list.forEach(r=>{const e1=dot1ExpDate(r),e2=dot2ExpDate(r);
+    if(!r.dot1Date&&!(r.dot1Paid>0)&&e1&&(e1-t)/86400000<=7)alert1++;
+    if(!r.dot2Date&&!(r.dot2Paid>0)&&e2&&(e2-t)/86400000<=7)alert2++;});
+  const totAlert=alert1+alert2;
+  document.getElementById('tngChipNB').textContent=noibo.length;
+  document.getElementById('tngChipF2').textContent=f2.length;
+  document.getElementById('tngChipHD').textContent=kyHD+'/'+list.length;
+  document.getElementById('tngSummary').innerHTML=`
+    <div class="kpi gold"><div class="label">Tổng nhóm TNG</div><div class="val">${list.length}<span style="font-size:14px;color:var(--ink-soft)"> căn</span></div><div class="foot"><span>Doanh số (chưa VAT)</span><b>${fmtShort(ds(list))}</b></div></div>
+    <div class="kpi"><div class="label">Nội bộ TNG</div><div class="val">${noibo.length}<span style="font-size:14px;color:var(--ink-soft)"> căn</span></div><div class="foot"><span>Doanh số</span><b>${fmtShort(ds(noibo))}</b></div></div>
+    <div class="kpi blue"><div class="label">Đại lý F2</div><div class="val">${f2.length}<span style="font-size:14px;color:var(--ink-soft)"> căn</span></div><div class="foot"><span>Doanh số</span><b>${fmtShort(ds(f2))}</b></div></div>
+    <div class="kpi"><div class="label">Đã ký HĐMB</div><div class="val">${kyHD}<span style="font-size:14px;color:var(--ink-soft)">/${list.length}</span></div><div class="foot"><span>Còn chờ ký</span><b>${list.length-kyHD} căn</b></div></div>
+    <div class="kpi warn"><div class="label">Cảnh báo hạn thanh toán</div><div class="val">${totAlert}<span style="font-size:14px;color:var(--ink-soft)"> lượt</span></div><div class="foot"><span>Đợt 1 <b>${alert1}</b></span><span class="rem">Đợt 2 ${alert2}</span></div></div>`;
+  const tb=document.getElementById('tngBody');
+  if(!list.length){tb.innerHTML=`<tr><td colspan="14"><div class="empty"><h3>Chưa có căn thuộc nhóm TNG</h3><p>Khi thêm/sửa căn, chọn Sàn/Đại lý = <b>TNG (nội bộ)</b> hoặc <b>TNG – F2 (nội bộ)</b>.</p></div></td></tr>`;document.getElementById('tngFoot').innerHTML='';return;}
+  tb.innerHTML=list.map((r,i)=>`<tr>
+    <td class="c muted">${i+1}</td><td><span class="mc">${r.maCan||'—'}</span></td><td class="muted">${r.loai||''}</td><td class="r muted">${r.dt||'—'}</td>
+    <td><span class="kh">${r.kh||'—'}</span></td>
+    <td class="c"><span class="role-tag ${tngRoleKey(r.agent)}">${tngRoleName(r.agent)}</span></td>
+    <td class="muted">${r.nvkd||'—'}</td><td class="muted">${fmtDate(r.ngayCoc)}</td>
+    <td class="c"><span class="pm-tag">${PM[r.pttt||'td5'].short}</span></td>
+    <td class="r">${money(r.giaHD)}</td>
+    <td class="c">${dueBadgeHtml(dot1ExpDate(r),r.dot1Paid,r.dot1Date)}</td>
+    <td class="c">${dueBadgeHtml(dot2ExpDate(r),r.dot2Paid,r.dot2Date)}</td>
+    <td class="muted">${r.ngayHD?fmtDate(r.ngayHD)+(r.soHD?'<br><span style="font-size:10px">'+r.soHD+'</span>':''):'<span class="badge b-neutral">Chưa ký</span>'}</td>
+    <td class="muted" style="white-space:normal;max-width:230px">${r.note||'—'}</td>
+  </tr>`).join('');
+  document.getElementById('tngFoot').innerHTML=`<tr><td colspan="6" class="tot-label">Tổng nhóm TNG (${list.length} căn · Nội bộ ${noibo.length} · F2 ${f2.length})</td><td colspan="3"></td><td class="r">${fmt(list.reduce((a,r)=>a+(r.giaHD||0),0))}</td><td colspan="4"></td></tr>`;
+}
+
+function renderAssume(){
+  document.getElementById('assumeBox').innerHTML=`<b>Ghi chú giả định & căn cứ tính:</b> Tiền cọc lấy cố định <b>50.000.000đ</b>/căn theo CSBH số 24/CSBH-TNG. Căn cứ tính phí là <b>giá bán chưa VAT</b> theo giỏ hàng gốc; giá trị HĐ gồm VAT tạm tính = giá chưa VAT × 1,1 (chỉnh lại theo HĐMB thực tế khi có). Phí thượng nguồn theo bậc <b>lũy tiến toàn phần</b> (hiện 12% giỏ → 4,5%); phí hạ nguồn theo số SP mỗi sàn (hiện đều &lt;10 SP → 4,5%). Các sàn <b>${[...INTERN].join(', ')}</b> đang để mức phí F1 = 0 (nội bộ / đơn vị phân phối) — chỉnh trong ✎ nếu VK/nội bộ có cơ chế phí riêng. <b>Giao dịch thành công (GDTC)</b> = đã ký HĐMB và khách nộp đủ ≥20% giá trị HĐ; đây là điều kiện để đối chiếu & thu phí từ Việt Khởi/CĐT.`;
+}
+
+function renderAll(){renderKPI();renderTiers();renderPipeline();renderTable();renderRecon();renderTNG();renderAssume();save();}
+
+/* CRUD */
+function fillAgents(){const s=document.getElementById('fAgent'),m=document.getElementById('f_agent');AGENTS.forEach(a=>{s.insertAdjacentHTML('beforeend',`<option value="${a}">${a}</option>`);m.insertAdjacentHTML('beforeend',`<option value="${a}">${a}</option>`);});}
+function agentRate(){const a=document.getElementById('f_agent').value;const n=(records.filter(r=>r.agent===a).length)||1;document.getElementById('f_pctF1').value=downstreamRate(a,n);liveCalc();}
+function set(id,v){document.getElementById(id).value=(v==null)?'':v;}
+function num(id){return parseFloat(document.getElementById(id).value)||0;}
+function openModal(id){
+  document.getElementById('overlay').classList.add('show');
+  if(id){const r=records.find(x=>x.id===id);document.getElementById('modalTitle').textContent='Sửa căn '+(r.maCan||'');
+    set('f_id',r.id);set('f_maCan',r.maCan);set('f_loai',r.loai);set('f_tang',r.tang);set('f_dt',r.dt);set('f_kh',r.kh);set('f_sdt',r.sdt);
+    document.getElementById('f_agent').value=r.agent||AGENTS[0];set('f_nvkd',r.nvkd);
+    set('f_ngayCoc',r.ngayCoc);set('f_tienCoc',r.tienCoc);set('f_gia',r.gia);set('f_giaHD',r.giaHD);document.getElementById('f_pttt').value=r.pttt||'td5';
+    set('f_ngayHD',r.ngayHD);set('f_soHD',r.soHD);set('f_dot1Paid',r.dot1Paid);set('f_dot1Date',r.dot1Date);set('f_dot2Paid',r.dot2Paid);set('f_dot2Date',r.dot2Date);
+    set('f_pctCDT',r.pctCDT);set('f_cdtThu',r.cdtThu);set('f_dot',r.dot);set('f_pctF1',r.pctF1);set('f_thuong',r.thuong);set('f_f1Tra',r.f1Tra);set('f_note',r.note);
+  }else{document.getElementById('modalTitle').textContent='Thêm căn mới';
+    ['f_id','f_maCan','f_loai','f_tang','f_dt','f_kh','f_sdt','f_nvkd','f_ngayHD','f_soHD','f_dot1Paid','f_dot1Date','f_dot2Paid','f_dot2Date','f_cdtThu','f_dot','f_thuong','f_f1Tra','f_note','f_gia','f_giaHD'].forEach(k=>set(k,''));
+    document.getElementById('f_agent').value=AGENTS[0];document.getElementById('f_pttt').value='td5';
+    set('f_ngayCoc','2026-07-12');set('f_tienCoc',50000000);set('f_pctCDT',upstreamRate(records.length+1));set('f_pctF1',0);
+  }
+  liveCalc();
+}
+function closeModal(){document.getElementById('overlay').classList.remove('show');}
+function liveCalc(){
+  const gia=num('f_gia'),giaHD=num('f_giaHD'),pttt=document.getElementById('f_pttt').value,pm=PM[pttt];
+  document.getElementById('f_phiCDT_auto').value=fmt(gia*num('f_pctCDT')/100)+' đ';
+  document.getElementById('f_phiF1_auto').value=fmt(gia*num('f_pctF1')/100)+' đ';
+  document.getElementById('f_dot1Due').value=fmt(giaHD*pm.d1/100)+' đ ('+pm.d1+'%)';
+  document.getElementById('f_dot2Due').value=fmt(giaHD*pm.d2/100)+' đ ('+pm.d2+'%)';
+  const cd=parseD(document.getElementById('f_ngayCoc').value);
+  document.getElementById('f_dot1Exp').value=cd?fmtD(addBiz(cd,OFF1))+' (cọc +'+OFF1+' NLV)':'—';
+  document.getElementById('f_dot2Exp').value=cd?fmtD(addDays(addBiz(cd,OFF1),OFF2))+' (đợt 1 +'+OFF2+' ngày)':'—';
+  const ln=gia*num('f_pctCDT')/100-gia*num('f_pctF1')/100-num('f_thuong');
+  document.getElementById('liveLN').textContent=fmtVND(ln);
+  const cum=num('f_dot1Paid')+num('f_dot2Paid');
+  const gd=document.getElementById('f_ngayHD').value && cum>=giaHD*0.20-1000;
+  document.getElementById('liveGDTC').textContent=gd?'Đạt ✓':(document.getElementById('f_ngayHD').value?'Chưa đủ 20%':'Chưa ký HĐMB');
+}
+function saveRecord(){
+  const maCan=document.getElementById('f_maCan').value.trim();if(!maCan){alert('Vui lòng nhập Mã căn.');return;}
+  const id=document.getElementById('f_id').value||'r'+Date.now();
+  const rec={id,maCan,loai:document.getElementById('f_loai').value.trim(),tang:document.getElementById('f_tang').value.trim(),dt:num('f_dt'),
+    kh:document.getElementById('f_kh').value.trim(),sdt:document.getElementById('f_sdt').value.trim(),agent:document.getElementById('f_agent').value,nvkd:document.getElementById('f_nvkd').value.trim(),
+    ngayCoc:document.getElementById('f_ngayCoc').value,tienCoc:num('f_tienCoc'),gia:num('f_gia'),giaHD:num('f_giaHD'),pttt:document.getElementById('f_pttt').value,
+    ngayHD:document.getElementById('f_ngayHD').value,soHD:document.getElementById('f_soHD').value.trim(),
+    dot1Paid:num('f_dot1Paid'),dot1Date:document.getElementById('f_dot1Date').value,dot2Paid:num('f_dot2Paid'),dot2Date:document.getElementById('f_dot2Date').value,
+    pctCDT:num('f_pctCDT'),cdtThu:num('f_cdtThu'),dot:document.getElementById('f_dot').value.trim(),
+    pctF1:num('f_pctF1'),thuong:num('f_thuong'),f1Tra:num('f_f1Tra'),note:document.getElementById('f_note').value.trim()};
+  const idx=records.findIndex(x=>x.id===id);if(idx>=0)records[idx]=rec;else records.push(rec);
+  closeModal();renderAll();stamp();
+}
+function delRecord(id){const r=records.find(x=>x.id===id);if(confirm('Xoá căn '+(r?r.maCan:'')+'?')){records=records.filter(x=>x.id!==id);renderAll();}}
+
+/* persist */
+function val(id){return document.getElementById(id).value;}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify({records,ky:val('metaKy'),nguoi:val('metaNguoi'),off1:OFF1,off2:OFF2,labels:LABELS}));}catch(e){}}
+function load(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){const d=JSON.parse(raw);records=d.records||[];if(d.ky)set('metaKy',d.ky);if(d.nguoi)set('metaNguoi',d.nguoi);if(d.off1!=null){OFF1=d.off1;set('off1',d.off1);}if(d.off2!=null){OFF2=d.off2;set('off2',d.off2);}if(d.labels)LABELS=d.labels;return true;}}catch(e){}return false;}
+/* ── Tiêu đề tuỳ chỉnh (sửa được) ── */
+function applyLabels(){document.querySelectorAll('[data-hkey]').forEach(el=>{const v=LABELS[el.dataset.hkey];if(v!=null)el.textContent=v;});}
+function initLabels(){document.querySelectorAll('[data-hkey]').forEach(el=>{el.addEventListener('input',()=>{LABELS[el.dataset.hkey]=el.textContent;save();});el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();el.blur();}});});applyLabels();}
+function toggleEditHeaders(){editHeaders=!editHeaders;document.body.classList.toggle('edit-headers',editHeaders);document.querySelectorAll('[data-hkey]').forEach(el=>{el.contentEditable=editHeaders;});const b=document.getElementById('btnEditHead');b.textContent=editHeaders?'✓ Xong':'✎ Sửa tiêu đề';b.classList.toggle('btn-gold',editHeaders);b.classList.toggle('btn-ghost',!editHeaders);}
+/* ── Căn tiêu đề cột dính đúng dưới hàng nhóm ── */
+function fixStickyTop(){const g=document.querySelector('thead .grp');if(!g)return;const h=g.getBoundingClientRect().height;document.querySelectorAll('thead .cols th').forEach(th=>th.style.top=h+'px');}
+function stamp(){const d=new Date();document.getElementById('metaDate').textContent=d.toLocaleDateString('vi-VN')+' '+d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});}
+
+/* io */
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);}
+function exportJSON(){dl(new Blob([JSON.stringify({records,ky:val('metaKy'),nguoi:val('metaNguoi')},null,2)],{type:'application/json'}),'SaoLuu_NhatKy_Solena_TNG.json');}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);records=d.records||[];if(d.ky)set('metaKy',d.ky);if(d.nguoi)set('metaNguoi',d.nguoi);renderAll();stamp();alert('Đã khôi phục '+records.length+' căn.');}catch(err){alert('File không hợp lệ.');}};rd.readAsText(f);e.target.value='';}
+function exportCSV(){
+  const head=['STT','Mã căn','Loại','Tầng','DT tim','Khách hàng','SĐT','Sàn','NVKD','Ngày cọc','Tiền cọc','PTTT','Giá chưa VAT','Giá trị HĐ gồm VAT','Ngày HĐMB','Số HĐMB','Đợt1 phải nộp','Hạn ĐK đợt1','Đợt1 đã nộp','Ngày nộp đợt1','Đợt2 phải nộp','Hạn ĐK đợt2','Đợt2 đã nộp','Ngày nộp đợt2','% lũy kế','GDTC','%CĐT','Phí CĐT','CĐT đã thu','CĐT còn thu','%F1','Phí F1','Thưởng nóng','∑Phải trả F1','F1 đã trả','F1 còn trả','LN TNG','Đợt ĐC','Ghi chú'];
+  const rows=records.map((r,i)=>[i+1,r.maCan,r.loai,r.tang,r.dt,r.kh,r.sdt,r.agent,r.nvkd,r.ngayCoc,r.tienCoc,PM[r.pttt||'td5'].short,r.gia,r.giaHD,r.ngayHD,r.soHD,dot1Due(r),fmtD(dot1ExpDate(r)),r.dot1Paid,r.dot1Date,dot2Due(r),fmtD(dot2ExpDate(r)),r.dot2Paid,r.dot2Date,cumPct(r).toFixed(1)+'%',isGDTC(r)?'Đạt':'Chưa',r.pctCDT,phiCDT(r),r.cdtThu,cdtConLai(r),r.pctF1,phiF1(r),r.thuong,tongTraF1(r),r.f1Tra,f1ConLai(r),lnTNG(r),r.dot,r.note]);
+  const csv=[head,...rows].map(row=>row.map(c=>`"${(c==null?'':c).toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  dl(new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8'}),'NhatKy_Solena_TNG.csv');
+}
+
+fillAgents();
+['q','fAgent','fStage'].forEach(id=>document.getElementById(id).addEventListener('input',renderTable));
+['metaKy','metaNguoi'].forEach(id=>document.getElementById(id).addEventListener('input',save));
+document.getElementById('off1').addEventListener('input',e=>{OFF1=parseInt(e.target.value)||0;renderTable();renderTNG();if(document.getElementById('overlay').classList.contains('show'))liveCalc();save();});
+document.getElementById('off2').addEventListener('input',e=>{OFF2=parseInt(e.target.value)||0;renderTable();renderTNG();if(document.getElementById('overlay').classList.contains('show'))liveCalc();save();});
+if(!load())records=SEED;
+set('off1',OFF1);set('off2',OFF2);
+initLabels();
+renderAll();stamp();fixStickyTop();
+window.addEventListener('resize',fixStickyTop);
+document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!editHeaders)closeModal();});
+</script>
+</body>
+</html>
